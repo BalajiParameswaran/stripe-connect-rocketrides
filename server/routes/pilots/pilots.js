@@ -39,7 +39,7 @@ router.get('/dashboard', pilotRequired, async (req, res) => {
     return a + b.amountForPilot();
   }, 0);
   const [showBanner] = req.flash('showBanner');
-  // There is one balance for each currencies used: as this 
+  // There is one balance for each currencies used: as this
   // demo app only uses USD we'll just use the first object
   res.render('dashboard', {
     pilot: pilot,
@@ -78,21 +78,52 @@ router.post('/rides', pilotRequired, async (req, res, next) => {
       source = getTestSource('payout_limit');
     }
     // Create a charge and set its destination to the pilot's account
-    const charge = await stripe.charges.create({
-      source: source,
-      amount: ride.amount,
-      currency: ride.currency,
-      description: config.appName,
-      statement_descriptor: config.appName,
-      // The destination parameter directs the transfer of funds from platform to pilot
-      transfer_data: {
-        // Send the amount for the pilot after collecting a 20% platform fee:
-        // the `amountForPilot` method simply computes `ride.amount * 0.8`
-        amount: ride.amountForPilot(),
-        // The destination of this charge is the pilot's Stripe account
-        destination: pilot.stripeAccountId,
-      },
-    });
+//    const charge = await stripe.charges.create({
+//      source: source,
+//      amount: ride.amount,
+//      currency: ride.currency,
+//      description: config.appName,
+//      statement_descriptor: config.appName,
+//      // The destination parameter directs the transfer of funds from platform to pilot
+//      transfer_data: {
+//        // Send the amount for the pilot after collecting a 20% platform fee:
+//        // the `amountForPilot` method simply computes `ride.amount * 0.8`
+//        amount: ride.amountForPilot(),
+//        // The destination of this charge is the pilot's Stripe account
+//        destination: pilot.stripeAccountId,
+//      },
+//    });
+
+
+
+//stripe.refunds.create({
+//  charge: "ch_1EM8hfCgxupTzMculb7aFPY4",
+//  reverse_transfer: true,
+//}).then(function(refund) {
+//  // asynchronously called
+//});
+
+
+//To creat
+
+const charge = stripe.charges.create({
+  amount: 3000,
+  currency: "usd",
+  source: source,
+    application_fee_amount: 123,
+  transfer_data: {
+    destination: 'acct_1EEvNYFEeU69ExBz',
+  },
+}).then(function(charge) {
+  // asynchronously called
+});
+
+
+
+
+
+const util = require('util')
+console.log(util.inspect(charge, false, null, true /* enable colors */));
     // Add the Stripe charge reference to the ride and save it
     ride.stripeChargeId = charge.id;
     ride.save();
